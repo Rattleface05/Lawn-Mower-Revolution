@@ -1,7 +1,7 @@
 #include "grass.h"
 
 Grass::Grass(){
-    hp = 45;
+    hp = 225;
     static bool loaded = 0;
     if(!loaded){
         try {
@@ -15,45 +15,10 @@ Grass::Grass(){
     sprite.emplace(texture);
     sprite->setOrigin({texture.getSize().x / 2.0f, texture.getSize().y / 2.0f});
 
-    sf::Vector2f randomPos(xDist(rng), yDist(rng));
-    sprite->setPosition(randomPos);
-    setPositionByChild(randomPos);
+    sprite->setPosition(getPosition());
     }
 }
 
-void Grass::update(float dt) {
-    // o sa-l folosesc pentru a ii schimba textura cand este taiata
-}
-
-void Grass::draw(sf::RenderWindow& window) {
-    if (sprite) {
-        window.draw(*sprite);
-    }
-}
-
-sf::FloatRect Grass::getBounds() const {
-    return sprite ? sprite->getGlobalBounds() : sf::FloatRect{};
-}
-
-void Grass::takeDamage(int amount) {
-    hp -= amount;
-}
-
-bool Grass::isDead() const{
-    return hp <= 0;
-}
-
-int Grass::getHP() const{
-    return hp;
-}
-
-void Grass::setHP(const int &aux){
-    hp = aux;
-}
-
-void Grass::setTexture(const sf::Texture &aux){
-    texture = aux;
-    sprite->setTexture(texture);
-}
+Grass::~Grass(){}
 
 sf::Texture Grass::texture;

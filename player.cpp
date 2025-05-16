@@ -15,6 +15,8 @@ Player::Player(){
     damage = 1;
 }
 
+Player::~Player(){}
+
 void Player::mousePosition(const sf::RenderWindow& aux) {
     sf::Vector2i mousePos = sf::Mouse::getPosition(aux);
     sf::Vector2f worldPos = aux.mapPixelToCoords(mousePos);

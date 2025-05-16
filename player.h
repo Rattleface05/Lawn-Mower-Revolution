@@ -11,6 +11,7 @@ class Player : public Entity {
 
 public:
     Player();
+    ~Player();
 
     void mousePosition(const sf::RenderWindow& aux);
 
