@@ -4,7 +4,7 @@ The Second Project for my OOP class
 # Compilare
 Programul a fost scris pe o masina Linux, daca exista erori de incarcare a texturilor din file, asta probabil este motivul.  
 De asemenea, comanda folosita pentru a compila este urmatoarea:  
-g++ main.cpp entity.cpp player.cpp grass.cpp -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -o joc
+g++ *.cpp -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -o joc
 
 # Descriere generala
 Esti un om caruia ii place sa isi tina gazonul bine ingrijit. Din pacate, gazonului nu ii place sa ramana asa, probabil e vecinul de vina, o fi facut el ceva...  
