@@ -25,5 +25,5 @@ public:
 
     int getDamage() const;
 
-    void plusDamage();
+    void plusDamage(int x = 1);
 };

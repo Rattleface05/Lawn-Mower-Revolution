@@ -26,19 +26,25 @@ int main() {
         return -1;
     }
 
-    sf::Text scoreText(font), dmgAllert(font);
+    sf::Text scoreText(font), dmgAllert(font), remainingTime(font);
 
-    scoreText.setFont(font);
+    //scoreText.setFont(font);
     scoreText.setCharacterSize(32);
     scoreText.setFillColor(sf::Color::White);
-    scoreText.setPosition({1700, 10});
+    scoreText.setPosition({1705, 10});
     scoreText.setString("Score: 0");
 
-    dmgAllert.setFont(font);
+    remainingTime.setCharacterSize(32);
+    remainingTime.setFillColor(sf::Color::White);
+    remainingTime.setPosition({1569, 40});
+    remainingTime.setString("Time remaining: 60");
+
+    //dmgAllert.setFont(font);
     dmgAllert.setCharacterSize(38);
     dmgAllert.setFillColor(sf::Color::White);
-    dmgAllert.setPosition({860, 10});
-    dmgAllert.setString("Damage up!");
+    dmgAllert.setPosition({830, 10});
+    dmgAllert.setString("Damage increased!");
+
 
     //EL MUSICA
     sf::Music music("audio/background.wav");
@@ -62,7 +68,8 @@ int main() {
     float grassInterval = 1, weedInterval = 1.5;
 
     while (window->isOpen()) {
-        
+
+
         //esc inchide fereastra, doar o componenta in plus, irelevanta
         while(const std::optional event = window->pollEvent()){
 
@@ -76,90 +83,104 @@ int main() {
             }
         }
 
-        //Actualizam scorul
-        scoreText.setString("Score: " + std::to_string(score));
+        if(timp.getElapsedTime().asSeconds() < 60){
+            //Actualizam scorul si timpul
+            scoreText.setString("Score: " + std::to_string(score));
+            remainingTime.setString("Time remaining: " + std::to_string(60 - timp.getElapsedTime().asSeconds()));
 
-        float dt = clock.restart().asSeconds();
 
-        player.mousePosition(*window);
-        player.update(dt);
+            float dt = clock.restart().asSeconds();
 
-        //Decide daca iarba sau buruiana este taiata
-        for (auto& grass : grassPatches) {
-            grass.update(dt);
+            player.mousePosition(*window);
+            player.update(dt);
 
-            if (grass.getBounds().findIntersection(player.getBounds())) {
-                grass.takeDamage(player.getDamage());
+            //Decide daca iarba sau buruiana este taiata
+            for (auto& grass : grassPatches) {
+                grass.update(dt);
+
+                if (grass.getBounds().findIntersection(player.getBounds())) {
+                    grass.takeDamage(player.getDamage());
+                }
             }
-        }
-        for (auto& weed : weedPatches) {
-            weed.update(dt);
+            for (auto& weed : weedPatches) {
+                weed.update(dt);
 
-            if (weed.getBounds().findIntersection(player.getBounds())) {
-                weed.takeDamage(player.getDamage());
-            }
-        }
-
-        //Daca sunt taiate de tot, dispar
-        for(int i = 0; i < grassPatches.size(); ++i){
-            if(grassPatches.at(i).isDead()){
-                grassPatches.erase(grassPatches.begin() + i);
-                score++;
+                if (weed.getBounds().findIntersection(player.getBounds())) {
+                    weed.takeDamage(player.getDamage());
+                }
             }
 
-        }
+            //Daca sunt taiate de tot, dispar
+            for(int i = 0; i < grassPatches.size(); ++i){
+                if(grassPatches.at(i).isDead()){
+                    grassPatches.erase(grassPatches.begin() + i);
+                    score++;
+                }
 
-        for(int i = 0; i < weedPatches.size(); ++i){
-            if(weedPatches.at(i).isDead()){
-                weedPatches.erase(weedPatches.begin() + i);
-                score+=2; //buruienile dau scor dublu
             }
 
-        }
+            for(int i = 0; i < weedPatches.size(); ++i){
+                if(weedPatches.at(i).isDead()){
+                    weedPatches.erase(weedPatches.begin() + i);
+                    score+=2; //buruienile dau scor dublu
+                }
 
-        // Se spawn-eaza in continuu iarba pana ajunge la 30
-        if (grassPatches.size() < 30 && grassSpawnClock.getElapsedTime().asSeconds() >= grassInterval) {
-            grassPatches.emplace_back();
-            grassSpawnClock.restart();
-        }
-
-        //La fel pentru buruieni, dar ele apar abia dupa 10 secunde, si ajung la abia 20
-        if(timp.getElapsedTime().asSeconds() >= 10.0f)
-            if (weedPatches.size() < 20 && weedSpawnClock.getElapsedTime().asSeconds() >= weedInterval) {
-                weedPatches.emplace_back();
-                weedSpawnClock.restart();
             }
+
+            // Se spawn-eaza in continuu iarba pana ajunge la 30
+            if (grassPatches.size() < 30 && grassSpawnClock.getElapsedTime().asSeconds() >= grassInterval) {
+                grassPatches.emplace_back();
+                grassSpawnClock.restart();
+            }
+
+            //La fel pentru buruieni, dar ele apar abia dupa 10 secunde, si ajung la abia 20
+            if(timp.getElapsedTime().asSeconds() >= 10.0f)
+                if (weedPatches.size() < 20 && weedSpawnClock.getElapsedTime().asSeconds() >= weedInterval) {
+                    weedPatches.emplace_back();
+                    weedSpawnClock.restart();
+                }
+            
+            //Damage creste la fiecare 10
+            if(damageClock.getElapsedTime().asSeconds() >= 10){
+                player.plusDamage(2);
+                damageClock.restart();
+            }
+
+
+
+            //render
+            window->clear(sf::Color(17, 112, 42));
+
+            //deseneaza entitati si scor
+            // window->draw(bg);
+            for (int i = 0; i < grassPatches.size(); ++i) {
+                grassPatches.at(i).draw(*window);
+            }
+            for (int i = 0; i < weedPatches.size(); ++i) {
+                weedPatches.at(i).draw(*window);
+            }
+            player.draw(*window);
+
+
+            //Scorul si notificarile trebuie sa  fie ultimul rendered 
+            window->draw(scoreText);
+            window->draw(remainingTime);
+            if(damageClock.getElapsedTime().asSeconds() <= 2.5f && player.getDamage() > 5)
+                window->draw(dmgAllert);
+
+        }
+    else{
+        window->clear(sf::Color(17, 100, 42));
+        sf::Text highScore(font);
+        highScore.setCharacterSize(160);
+        highScore.setFillColor(sf::Color::White);
+        highScore.setPosition({610, 300});
+        highScore.setString("Time's Up!\nScore: " + std::to_string(score));
+        window->draw(highScore);
+    }
+
+    window->display();
         
-        //Damage creste la fiecare 15 sec pana ajunge la 10
-        if(damageClock.getElapsedTime().asSeconds() >= 15 && player.getDamage() < 10){
-            player.plusDamage();
-            damageClock.restart();
-        }
-
-
-
-        //render
-        window->clear(sf::Color(17, 112, 42));
-
-        //deseneaza entitati si scor
-        // window->draw(bg);
-        for (int i = 0; i < grassPatches.size(); ++i) {
-            grassPatches.at(i).draw(*window);
-        }
-        for (int i = 0; i < weedPatches.size(); ++i) {
-            weedPatches.at(i).draw(*window);
-        }
-        player.draw(*window);
-
-
-        //Scorul si notificarile trebuie sa  fie ultimul rendered 
-        window->draw(scoreText);
-        if(damageClock.getElapsedTime().asSeconds() <= 5 && player.getDamage() > 5 && player.getDamage() <10 )
-            window->draw(dmgAllert);
-
-
-
-        window->display();
     }
 
     return 0;

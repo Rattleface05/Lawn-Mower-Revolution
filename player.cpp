@@ -40,6 +40,6 @@ int Player::getDamage() const {
     return damage;
 }
 
-void Player::plusDamage() {
-    damage++;
+void Player::plusDamage(int x) {
+    damage+=x;
 }
