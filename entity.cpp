@@ -1,5 +1,8 @@
 #include "entity.h"
 
+Entity::Entity(){}
+
+Entity::~Entity(){}
 
 void Entity::setPosition(const sf::Vector2f& aux) {
     position = aux;
