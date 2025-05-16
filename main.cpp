@@ -6,7 +6,7 @@
 #include <vector>
 
 int main() {
-    unsigned int width = 1920, height = 1080, dmg = 5;
+    unsigned int width = 1920, height = 1080;
     sf::RenderWindow * window = new sf::RenderWindow(sf::VideoMode({width,height}), "Lawn Mower Revolution");
     window->setFramerateLimit(60);
 
@@ -89,14 +89,14 @@ int main() {
             grass.update(dt);
 
             if (grass.getBounds().findIntersection(player.getBounds())) {
-                grass.takeDamage(dmg);
+                grass.takeDamage(player.getDamage());
             }
         }
         for (auto& weed : weedPatches) {
             weed.update(dt);
 
             if (weed.getBounds().findIntersection(player.getBounds())) {
-                weed.takeDamage(dmg);
+                weed.takeDamage(player.getDamage());
             }
         }
 
@@ -131,8 +131,8 @@ int main() {
             }
         
         //Damage creste la fiecare 15 sec pana ajunge la 10
-        if(damageClock.getElapsedTime().asSeconds() >= 15 && dmg < 10){
-            dmg++;
+        if(damageClock.getElapsedTime().asSeconds() >= 15 && player.getDamage() < 10){
+            player.plusDamage();
             damageClock.restart();
         }
 
@@ -154,7 +154,7 @@ int main() {
 
         //Scorul si notificarile trebuie sa  fie ultimul rendered 
         window->draw(scoreText);
-        if(damageClock.getElapsedTime().asSeconds() <= 5 && dmg > 5 && dmg <10 )
+        if(damageClock.getElapsedTime().asSeconds() <= 5 && player.getDamage() > 5 && player.getDamage() <10 )
             window->draw(dmgAllert);
 
 

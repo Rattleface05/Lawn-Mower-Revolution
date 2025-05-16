@@ -12,7 +12,7 @@ Player::Player(){
         std::cerr << "[Texture Error] " << e.what() << '\n';
     }
 
-    damage = 1;
+    damage = 5;
 }
 
 Player::~Player(){}
@@ -34,4 +34,12 @@ void Player::draw(sf::RenderWindow& window) {
 
 sf::FloatRect Player::getBounds() const {
     return sprite ? sprite->getGlobalBounds() : sf::FloatRect{};
+}
+
+int Player::getDamage() const {
+    return damage;
+}
+
+void Player::plusDamage() {
+    damage++;
 }

@@ -22,4 +22,8 @@ public:
     void draw(sf::RenderWindow& window) override;
 
     sf::FloatRect getBounds() const override;
+
+    int getDamage() const;
+
+    void plusDamage();
 };
