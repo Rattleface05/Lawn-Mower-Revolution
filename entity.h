@@ -7,8 +7,8 @@ class Entity {
     sf::Vector2f position;
     
 public:
-    // Entity();
-    // ~Entity();
+    Entity();
+    virtual ~Entity();
 
     virtual void update(float dt) = 0;
     virtual void draw(sf::RenderWindow& window) = 0;
